@@ -1,10 +1,36 @@
 [project]
-name = "jenkins-mcp"
+name = "jenkins-mcp-server"
 version = "0.1.0"
-description = "Add your description here"
+description = "Comprehensive Jenkins CI/CD automation MCP server with 20+ tools for job management, build monitoring, pipeline orchestration, and batch operations"
 readme = "README.md"
 requires-python = ">=3.12"
+license = {text = "Apache-2.0"}
+authors = [
+    {name = "Avinash Sangle", email = "avinash.sangle@example.com"}
+]
+keywords = ["mcp", "jenkins", "ci-cd", "automation", "build-server", "devops"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: Apache Software License",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Software Development :: Build Tools",
+]
+
 dependencies = [
     "mcp[cli]>=1.11.0",
     "requests>=2.32.4",
+    "cachetools>=5.5.0",
+    "fastapi>=0.115.0",
+    "python-dotenv>=1.0.0",
+    "pydantic>=2.0.0",
 ]
+
+[project.urls]
+Homepage = "https://github.com/avisangle/jenkins-mcp"
+Repository = "https://github.com/avisangle/jenkins-mcp"
+Issues = "https://github.com/avisangle/jenkins-mcp/issues"
+
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
