@@ -1,457 +1,385 @@
-{
-  "tools": [
-    {
-      "name": "trigger_job",
-      "description": "Trigger a Jenkins job with optional parameters. Supports nested job paths like 'folder1/subfolder/jobname'.",
-      "inputSchema": {
+[
+  {
+    "name": "trigger_job",
+    "description": "Trigger a Jenkins job with optional parameters. Supports nested job paths like 'folder1/subfolder/jobname'.",
+    "arguments": [
+      {
+        "name": "job_name",
+        "type": "string",
+        "desc": "Name or path of the Jenkins job"
+      },
+      {
+        "name": "params",
         "type": "object",
-        "properties": {
-          "job_name": {
-            "type": "string",
-            "description": "Name or path of the Jenkins job"
-          },
-          "params": {
-            "type": "object",
-            "description": "Job parameters. For multiselect parameters, pass as a list."
-          }
-        },
-        "required": ["job_name"]
+        "desc": "Job parameters. For multiselect parameters, pass as a list."
       }
-    },
-    {
-      "name": "get_job_info",
-      "description": "Get detailed information about a Jenkins job including its parameters. Supports nested job paths and automatic search fallback.",
-      "inputSchema": {
+    ]
+  },
+  {
+    "name": "get_job_info",
+    "description": "Get detailed information about a Jenkins job including its parameters. Supports nested job paths and automatic search fallback.",
+    "arguments": [
+      {
+        "name": "job_name",
+        "type": "string",
+        "desc": "Name or path of the Jenkins job"
+      },
+      {
+        "name": "auto_search",
+        "type": "boolean",
+        "desc": "If True, perform pattern search when direct lookup fails (default: true)"
+      }
+    ]
+  },
+  {
+    "name": "get_build_status",
+    "description": "Get the status of a specific build. Supports nested job paths.",
+    "arguments": [
+      {
+        "name": "job_name",
+        "type": "string",
+        "desc": "Name of the Jenkins job"
+      },
+      {
+        "name": "build_number",
+        "type": "integer",
+        "desc": "Build number"
+      }
+    ]
+  },
+  {
+    "name": "get_console_log",
+    "description": "Get console log for a specific build. Supports nested job paths.",
+    "arguments": [
+      {
+        "name": "job_name",
+        "type": "string",
+        "desc": "Name of the Jenkins job"
+      },
+      {
+        "name": "build_number",
+        "type": "integer",
+        "desc": "Build number"
+      },
+      {
+        "name": "start",
+        "type": "integer",
+        "desc": "Starting byte position for fetching the log (default: 0)"
+      }
+    ]
+  },
+  {
+    "name": "list_jobs",
+    "description": "List Jenkins jobs with optional recursive traversal and advanced filtering.",
+    "arguments": [
+      {
+        "name": "recursive",
+        "type": "boolean",
+        "desc": "If True, recursively traverse folders (default: true)"
+      },
+      {
+        "name": "max_depth",
+        "type": "integer",
+        "desc": "Maximum depth to recurse when recursive=True (default: 10)"
+      },
+      {
+        "name": "include_folders",
+        "type": "boolean",
+        "desc": "Whether to include folder items in results (default: false)"
+      },
+      {
+        "name": "status_filter",
+        "type": "string",
+        "desc": "Filter by job status: building, queued, idle, disabled"
+      },
+      {
+        "name": "last_build_result",
+        "type": "string",
+        "desc": "Filter by last build result: SUCCESS, FAILURE, UNSTABLE, ABORTED, NOT_BUILT"
+      },
+      {
+        "name": "days_since_last_build",
+        "type": "integer",
+        "desc": "Only include jobs built within the last N days"
+      },
+      {
+        "name": "enabled_only",
+        "type": "boolean",
+        "desc": "If True, only include enabled jobs; if False, only disabled jobs"
+      }
+    ]
+  },
+  {
+    "name": "get_folder_info",
+    "description": "Get information about a specific Jenkins folder.",
+    "arguments": [
+      {
+        "name": "folder_path",
+        "type": "string",
+        "desc": "Path to the folder (e.g., 'folder1/subfolder')"
+      }
+    ]
+  },
+  {
+    "name": "search_jobs",
+    "description": "Search for Jenkins jobs using pattern matching with advanced filtering.",
+    "arguments": [
+      {
+        "name": "pattern",
+        "type": "string",
+        "desc": "Pattern to match job names (supports wildcards or regex)"
+      },
+      {
+        "name": "job_type",
+        "type": "string",
+        "desc": "Filter by type: job, folder, all (default: job)"
+      },
+      {
+        "name": "max_depth",
+        "type": "integer",
+        "desc": "Maximum depth to search (default: 10)"
+      },
+      {
+        "name": "use_regex",
+        "type": "boolean",
+        "desc": "If True, treat pattern as regular expression (default: false)"
+      },
+      {
+        "name": "status_filter",
+        "type": "string",
+        "desc": "Filter by job status: building, queued, idle, disabled"
+      },
+      {
+        "name": "last_build_result",
+        "type": "string",
+        "desc": "Filter by last build result: SUCCESS, FAILURE, UNSTABLE, ABORTED, NOT_BUILT"
+      },
+      {
+        "name": "days_since_last_build",
+        "type": "integer",
+        "desc": "Only include jobs built within the last N days"
+      },
+      {
+        "name": "enabled_only",
+        "type": "boolean",
+        "desc": "Filter by enabled/disabled status"
+      }
+    ]
+  },
+  {
+    "name": "search_and_trigger",
+    "description": "Search for a job by pattern and trigger it if exactly one match is found.",
+    "arguments": [
+      {
+        "name": "pattern",
+        "type": "string",
+        "desc": "Pattern to match job names"
+      },
+      {
+        "name": "params",
         "type": "object",
-        "properties": {
-          "job_name": {
-            "type": "string",
-            "description": "Name or path of the Jenkins job"
-          },
-          "auto_search": {
-            "type": "boolean",
-            "description": "If True, perform pattern search when direct lookup fails",
-            "default": true
-          }
-        },
-        "required": ["job_name"]
+        "desc": "Job parameters for triggering"
+      },
+      {
+        "name": "max_depth",
+        "type": "integer",
+        "desc": "Maximum search depth (default: 10)"
       }
-    },
-    {
-      "name": "get_build_status",
-      "description": "Get the status of a specific build. Supports nested job paths.",
-      "inputSchema": {
-        "type": "object",
-        "properties": {
-          "job_name": {
-            "type": "string",
-            "description": "Name of the Jenkins job"
-          },
-          "build_number": {
-            "type": "integer",
-            "description": "Build number"
-          }
-        },
-        "required": ["job_name", "build_number"]
+    ]
+  },
+  {
+    "name": "get_queue_info",
+    "description": "Get information about queued builds.",
+    "arguments": []
+  },
+  {
+    "name": "server_info",
+    "description": "Get Jenkins server information.",
+    "arguments": []
+  },
+  {
+    "name": "summarize_build_log",
+    "description": "Summarizes the console log of a Jenkins build using a configured LLM prompt (demonstration tool).",
+    "arguments": [
+      {
+        "name": "job_name",
+        "type": "string",
+        "desc": "Name of the Jenkins job"
+      },
+      {
+        "name": "build_number",
+        "type": "integer",
+        "desc": "Build number"
       }
-    },
-    {
-      "name": "get_console_log",
-      "description": "Get console log for a specific build. Supports nested job paths.",
-      "inputSchema": {
-        "type": "object",
-        "properties": {
-          "job_name": {
-            "type": "string",
-            "description": "Name of the Jenkins job"
-          },
-          "build_number": {
-            "type": "integer",
-            "description": "Build number"
-          },
-          "start": {
-            "type": "integer",
-            "description": "Starting byte position for fetching the log",
-            "default": 0
-          }
-        },
-        "required": ["job_name", "build_number"]
+    ]
+  },
+  {
+    "name": "get_pipeline_status",
+    "description": "Gets detailed pipeline stage status for a Jenkins Pipeline job build.",
+    "arguments": [
+      {
+        "name": "job_name",
+        "type": "string",
+        "desc": "Name of the Jenkins job"
+      },
+      {
+        "name": "build_number",
+        "type": "integer",
+        "desc": "Build number"
       }
-    },
-    {
-      "name": "list_jobs",
-      "description": "List Jenkins jobs with optional recursive traversal and advanced filtering.",
-      "inputSchema": {
-        "type": "object",
-        "properties": {
-          "recursive": {
-            "type": "boolean",
-            "description": "If True, recursively traverse folders",
-            "default": true
-          },
-          "max_depth": {
-            "type": "integer",
-            "description": "Maximum depth to recurse when recursive=True",
-            "default": 10
-          },
-          "include_folders": {
-            "type": "boolean",
-            "description": "Whether to include folder items in results",
-            "default": false
-          },
-          "status_filter": {
-            "type": "string",
-            "description": "Filter by job status: building, queued, idle, disabled",
-            "enum": ["building", "queued", "idle", "disabled"]
-          },
-          "last_build_result": {
-            "type": "string",
-            "description": "Filter by last build result",
-            "enum": ["SUCCESS", "FAILURE", "UNSTABLE", "ABORTED", "NOT_BUILT"]
-          },
-          "days_since_last_build": {
-            "type": "integer",
-            "description": "Only include jobs built within the last N days"
-          },
-          "enabled_only": {
-            "type": "boolean",
-            "description": "If True, only include enabled jobs; if False, only disabled jobs"
-          }
-        }
+    ]
+  },
+  {
+    "name": "list_build_artifacts",
+    "description": "List all artifacts for a specific Jenkins build.",
+    "arguments": [
+      {
+        "name": "job_name",
+        "type": "string",
+        "desc": "Name of the Jenkins job"
+      },
+      {
+        "name": "build_number",
+        "type": "integer",
+        "desc": "Build number to list artifacts for"
       }
-    },
-    {
-      "name": "get_folder_info",
-      "description": "Get information about a specific Jenkins folder.",
-      "inputSchema": {
-        "type": "object",
-        "properties": {
-          "folder_path": {
-            "type": "string",
-            "description": "Path to the folder (e.g., 'folder1/subfolder')"
-          }
-        },
-        "required": ["folder_path"]
+    ]
+  },
+  {
+    "name": "download_build_artifact",
+    "description": "Download a specific build artifact content (text-based artifacts only for safety).",
+    "arguments": [
+      {
+        "name": "job_name",
+        "type": "string",
+        "desc": "Name of the Jenkins job"
+      },
+      {
+        "name": "build_number",
+        "type": "integer",
+        "desc": "Build number containing the artifact"
+      },
+      {
+        "name": "artifact_path",
+        "type": "string",
+        "desc": "Relative path to the artifact (from list_build_artifacts)"
+      },
+      {
+        "name": "max_size_mb",
+        "type": "integer",
+        "desc": "Maximum file size to download in MB (default: 50)"
       }
-    },
-    {
-      "name": "search_jobs",
-      "description": "Search for Jenkins jobs using pattern matching with advanced filtering.",
-      "inputSchema": {
-        "type": "object",
-        "properties": {
-          "pattern": {
-            "type": "string",
-            "description": "Pattern to match job names (supports wildcards or regex)"
-          },
-          "job_type": {
-            "type": "string",
-            "description": "Filter by type",
-            "enum": ["job", "folder", "all"],
-            "default": "job"
-          },
-          "max_depth": {
-            "type": "integer",
-            "description": "Maximum depth to search",
-            "default": 10
-          },
-          "use_regex": {
-            "type": "boolean",
-            "description": "If True, treat pattern as regular expression",
-            "default": false
-          },
-          "status_filter": {
-            "type": "string",
-            "description": "Filter by job status",
-            "enum": ["building", "queued", "idle", "disabled"]
-          },
-          "last_build_result": {
-            "type": "string",
-            "description": "Filter by last build result",
-            "enum": ["SUCCESS", "FAILURE", "UNSTABLE", "ABORTED", "NOT_BUILT"]
-          },
-          "days_since_last_build": {
-            "type": "integer",
-            "description": "Only include jobs built within the last N days"
-          },
-          "enabled_only": {
-            "type": "boolean",
-            "description": "Filter by enabled/disabled status"
-          }
-        },
-        "required": ["pattern"]
+    ]
+  },
+  {
+    "name": "search_build_artifacts",
+    "description": "Search for artifacts across recent builds of a job using pattern matching.",
+    "arguments": [
+      {
+        "name": "job_name",
+        "type": "string",
+        "desc": "Name of the Jenkins job to search"
+      },
+      {
+        "name": "pattern",
+        "type": "string",
+        "desc": "Pattern to match artifact names (wildcards or regex)"
+      },
+      {
+        "name": "max_builds",
+        "type": "integer",
+        "desc": "Maximum number of recent builds to search (default: 10)"
+      },
+      {
+        "name": "use_regex",
+        "type": "boolean",
+        "desc": "If True, treat pattern as regex (default: false)"
       }
-    },
-    {
-      "name": "search_and_trigger",
-      "description": "Search for a job by pattern and trigger it if exactly one match is found.",
-      "inputSchema": {
-        "type": "object",
-        "properties": {
-          "pattern": {
-            "type": "string",
-            "description": "Pattern to match job names"
-          },
-          "params": {
-            "type": "object",
-            "description": "Job parameters for triggering"
-          },
-          "max_depth": {
-            "type": "integer",
-            "description": "Maximum search depth",
-            "default": 10
-          }
-        },
-        "required": ["pattern"]
+    ]
+  },
+  {
+    "name": "batch_trigger_jobs",
+    "description": "Trigger multiple Jenkins jobs in batch with parallel execution.",
+    "arguments": [
+      {
+        "name": "operations",
+        "type": "array",
+        "desc": "List of job operations with job_name, params, and optional priority (1-10)"
+      },
+      {
+        "name": "max_concurrent",
+        "type": "integer",
+        "desc": "Maximum number of concurrent job triggers (default: 5)"
+      },
+      {
+        "name": "fail_fast",
+        "type": "boolean",
+        "desc": "If True, stop processing on first failure (default: false)"
+      },
+      {
+        "name": "wait_for_completion",
+        "type": "boolean",
+        "desc": "If True, wait for all jobs to complete (default: false)"
       }
-    },
-    {
-      "name": "get_queue_info",
-      "description": "Get information about queued builds.",
-      "inputSchema": {
-        "type": "object",
-        "properties": {}
+    ]
+  },
+  {
+    "name": "batch_monitor_jobs",
+    "description": "Monitor the status of a batch operation and its individual jobs.",
+    "arguments": [
+      {
+        "name": "operation_id",
+        "type": "string",
+        "desc": "The operation ID returned from batch_trigger_jobs"
       }
-    },
-    {
-      "name": "server_info",
-      "description": "Get Jenkins server information.",
-      "inputSchema": {
-        "type": "object",
-        "properties": {}
+    ]
+  },
+  {
+    "name": "batch_cancel_jobs",
+    "description": "Cancel a batch operation and optionally cancel running builds.",
+    "arguments": [
+      {
+        "name": "operation_id",
+        "type": "string",
+        "desc": "The operation ID to cancel"
+      },
+      {
+        "name": "cancel_running_builds",
+        "type": "boolean",
+        "desc": "If True, attempt to cancel running builds (default: false)"
       }
-    },
-    {
-      "name": "summarize_build_log",
-      "description": "Summarizes the console log of a Jenkins build using a configured LLM prompt (demonstration tool).",
-      "inputSchema": {
-        "type": "object",
-        "properties": {
-          "job_name": {
-            "type": "string",
-            "description": "Name of the Jenkins job"
-          },
-          "build_number": {
-            "type": "integer",
-            "description": "Build number"
-          }
-        },
-        "required": ["job_name", "build_number"]
+    ]
+  },
+  {
+    "name": "get_cache_statistics",
+    "description": "Get comprehensive cache statistics and performance metrics.",
+    "arguments": []
+  },
+  {
+    "name": "clear_cache",
+    "description": "Clear caches with fine-grained control.",
+    "arguments": [
+      {
+        "name": "cache_type",
+        "type": "string",
+        "desc": "Type of cache to clear: all, static, semi_static, dynamic, permanent, short"
+      },
+      {
+        "name": "job_name",
+        "type": "string",
+        "desc": "Clear caches for a specific job only"
       }
-    },
-    {
-      "name": "get_pipeline_status",
-      "description": "Gets detailed pipeline stage status for a Jenkins Pipeline job build.",
-      "inputSchema": {
-        "type": "object",
-        "properties": {
-          "job_name": {
-            "type": "string",
-            "description": "Name of the Jenkins job"
-          },
-          "build_number": {
-            "type": "integer",
-            "description": "Build number"
-          }
-        },
-        "required": ["job_name", "build_number"]
+    ]
+  },
+  {
+    "name": "warm_cache",
+    "description": "Warm up caches by pre-loading frequently accessed data.",
+    "arguments": [
+      {
+        "name": "operations",
+        "type": "array",
+        "desc": "List of operations to warm: server_info, job_list, queue_info"
       }
-    },
-    {
-      "name": "list_build_artifacts",
-      "description": "List all artifacts for a specific Jenkins build.",
-      "inputSchema": {
-        "type": "object",
-        "properties": {
-          "job_name": {
-            "type": "string",
-            "description": "Name of the Jenkins job"
-          },
-          "build_number": {
-            "type": "integer",
-            "description": "Build number to list artifacts for"
-          }
-        },
-        "required": ["job_name", "build_number"]
-      }
-    },
-    {
-      "name": "download_build_artifact",
-      "description": "Download a specific build artifact content (text-based artifacts only for safety).",
-      "inputSchema": {
-        "type": "object",
-        "properties": {
-          "job_name": {
-            "type": "string",
-            "description": "Name of the Jenkins job"
-          },
-          "build_number": {
-            "type": "integer",
-            "description": "Build number containing the artifact"
-          },
-          "artifact_path": {
-            "type": "string",
-            "description": "Relative path to the artifact (from list_build_artifacts)"
-          },
-          "max_size_mb": {
-            "type": "integer",
-            "description": "Maximum file size to download in MB",
-            "default": 50
-          }
-        },
-        "required": ["job_name", "build_number", "artifact_path"]
-      }
-    },
-    {
-      "name": "search_build_artifacts",
-      "description": "Search for artifacts across recent builds of a job using pattern matching.",
-      "inputSchema": {
-        "type": "object",
-        "properties": {
-          "job_name": {
-            "type": "string",
-            "description": "Name of the Jenkins job to search"
-          },
-          "pattern": {
-            "type": "string",
-            "description": "Pattern to match artifact names (wildcards or regex)"
-          },
-          "max_builds": {
-            "type": "integer",
-            "description": "Maximum number of recent builds to search",
-            "default": 10
-          },
-          "use_regex": {
-            "type": "boolean",
-            "description": "If True, treat pattern as regex",
-            "default": false
-          }
-        },
-        "required": ["job_name", "pattern"]
-      }
-    },
-    {
-      "name": "batch_trigger_jobs",
-      "description": "Trigger multiple Jenkins jobs in batch with parallel execution.",
-      "inputSchema": {
-        "type": "object",
-        "properties": {
-          "operations": {
-            "type": "array",
-            "description": "List of job operations",
-            "items": {
-              "type": "object",
-              "properties": {
-                "job_name": {
-                  "type": "string"
-                },
-                "params": {
-                  "type": "object"
-                },
-                "priority": {
-                  "type": "integer",
-                  "minimum": 1,
-                  "maximum": 10,
-                  "default": 1
-                }
-              },
-              "required": ["job_name"]
-            }
-          },
-          "max_concurrent": {
-            "type": "integer",
-            "description": "Maximum number of concurrent job triggers",
-            "default": 5
-          },
-          "fail_fast": {
-            "type": "boolean",
-            "description": "If True, stop processing on first failure",
-            "default": false
-          },
-          "wait_for_completion": {
-            "type": "boolean",
-            "description": "If True, wait for all jobs to complete",
-            "default": false
-          }
-        },
-        "required": ["operations"]
-      }
-    },
-    {
-      "name": "batch_monitor_jobs",
-      "description": "Monitor the status of a batch operation and its individual jobs.",
-      "inputSchema": {
-        "type": "object",
-        "properties": {
-          "operation_id": {
-            "type": "string",
-            "description": "The operation ID returned from batch_trigger_jobs"
-          }
-        },
-        "required": ["operation_id"]
-      }
-    },
-    {
-      "name": "batch_cancel_jobs",
-      "description": "Cancel a batch operation and optionally cancel running builds.",
-      "inputSchema": {
-        "type": "object",
-        "properties": {
-          "operation_id": {
-            "type": "string",
-            "description": "The operation ID to cancel"
-          },
-          "cancel_running_builds": {
-            "type": "boolean",
-            "description": "If True, attempt to cancel running builds",
-            "default": false
-          }
-        },
-        "required": ["operation_id"]
-      }
-    },
-    {
-      "name": "get_cache_statistics",
-      "description": "Get comprehensive cache statistics and performance metrics.",
-      "inputSchema": {
-        "type": "object",
-        "properties": {}
-      }
-    },
-    {
-      "name": "clear_cache",
-      "description": "Clear caches with fine-grained control.",
-      "inputSchema": {
-        "type": "object",
-        "properties": {
-          "cache_type": {
-            "type": "string",
-            "description": "Type of cache to clear",
-            "enum": ["all", "static", "semi_static", "dynamic", "permanent", "short"]
-          },
-          "job_name": {
-            "type": "string",
-            "description": "Clear caches for a specific job only"
-          }
-        }
-      }
-    },
-    {
-      "name": "warm_cache",
-      "description": "Warm up caches by pre-loading frequently accessed data.",
-      "inputSchema": {
-        "type": "object",
-        "properties": {
-          "operations": {
-            "type": "array",
-            "description": "List of operations to warm",
-            "items": {
-              "type": "string",
-              "enum": ["server_info", "job_list", "queue_info"]
-            }
-          }
-        }
-      }
-    }
-  ]
-}
+    ]
+  }
+]
